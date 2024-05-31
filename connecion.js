@@ -1,11 +1,12 @@
 let mysql = require('mysql')
-
+let dotenv = require('dotenv')
+dotenv.config()
 con = mysql.createConnection(
     {
-        host:'localhost',
-        user:'root',
-        password:'root',
-        database:'sampledb'
+        host:process.env.HOST,
+        user:process.env.USER,
+        password:process.env.PASSWORD,
+        database:process.env.DATABASE
     }
 )
 

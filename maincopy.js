@@ -21,6 +21,8 @@ app.post ('/signup',async (req,res)=>{
 })
 var hhh
 app.post('/login',(req,res)=>{
+    if(req.body==null){
+    
     let {username,password} = req.body
     con.query(`select * from userdetails where userName="${username}"`,(err,data)=>{
         let user = data[0]
@@ -35,7 +37,7 @@ app.post('/login',(req,res)=>{
                 return res.status(401).json({ error: 'Invalid password' });
             }
             hhh=jwt.sign({ username: user.userName }, 'hello',{ expiresIn: '1h' }) 
-            res.json({hhh,message:`${username} login successful`})
+            return res.json({hhh,message:`${username} login successful`})
             console.log(hhh)
             // res.json({message:`${username} login successful`}) 
             // return res.status(401).json({ error: 'Invalid password' });
@@ -45,25 +47,28 @@ app.post('/login',(req,res)=>{
 
         
     })
-    // res.json({message:`${username} login successful`})
-})
-
-app.get('/me', async (req, res) => {
+}
+// const token = req.headers.authorization.split(' ')[1];
+if(req.headers.authorization){
     try {
-        const token = req.headers.authorization.split(' ')[1];
+        const token = req.headers.authorization;
         // const token = hhh;
         if (!token) {
             return res.status(401).json({ error: 'Token is required' });
         }
-        jwt.verify(token, 'process.env.JWT_SECRET', (err, decoded) => {
+        jwt.verify(token, 'hello', (err, decoded) => {
             if (err) {
                 return res.status(401).json({ error: 'Invalid token' });
             }
             // Here you can fetch user details from the database using the decoded user ID or username
-            res.json({ user: decoded });
+            return res.json({ user: decoded });
         });
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+        console.log("ggg")
+        return res.status(500).json({ error: 'Internal server error' });
     }
-});
+}
+    // res.json({message:`${username} login successful`})
+})
+
 app.listen(process.env.PORT || 8000)
